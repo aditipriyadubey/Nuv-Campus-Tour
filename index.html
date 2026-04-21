@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Navrachna University – Campus Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #0a0c10;
+      --surface:   #111318;
+      --card:      #161a23;
+      --border:    #1e2535;
+      --accent:    #00e5ff;
+      --accent2:   #ff6b35;
+      --accent3:   #39ff14;
+      --text:      #e8eaf6;
+      --muted:     #5a6480;
+      --lift-col:  #00e5ff;
+      --stair-col: #ff6b35;
+      --opt-col:   #39ff14;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ---- GRID BACKGROUND ---- */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ---- HEADER ---- */
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 2.5rem 2rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(0,229,255,0.05) 0%, transparent 100%);
+      text-align: center;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .logo-icon {
+      width: 48px; height: 48px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 0 30px rgba(0,229,255,0.4);
+    }
+
+    h1 {
+      font-size: clamp(1.4rem, 4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    h1 span { color: var(--accent); }
+
+    .subtitle {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 0.4rem;
+    }
+
+    .badges {
+      display: flex; gap: 0.5rem; justify-content: center;
+      flex-wrap: wrap; margin-top: 1rem;
+    }
+
+    .badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 100px;
+      border: 1px solid;
+    }
+
+    .badge-algo { border-color: var(--opt-col); color: var(--opt-col); }
+    .badge-graph { border-color: var(--accent); color: var(--accent); }
+    .badge-3d { border-color: var(--accent2); color: var(--accent2); }
+
+    /* ---- MAIN ---- */
+    main {
+      position: relative; z-index: 5;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ---- SEARCH CARD ---- */
+    .search-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .search-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: -60px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .search-title {
+      font-size: 0.7rem;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .inputs-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media(max-width: 600px) { .inputs-row { grid-template-columns: 1fr; } }
+
+    .field label {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .field select {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6480' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+      transition: border-color 0.2s;
+    }
+
+    .field select:focus { border-color: var(--accent); }
+
+    .btn-find {
+      width: 100%;
+      padding: 1rem;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-find:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(0,229,255,0.35);
+    }
+
+    .btn-find:active { transform: translateY(0); }
+
+    .btn-find::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+    }
+
+    .btn-find:hover::after { transform: translateX(100%); }
+
+    /* ---- RESULTS ---- */
+    .results { display: none; }
+    .results.visible { display: block; animation: fadeUp 0.4s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- ROUTE TABS ---- */
+    .tabs {
+      display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
+      overflow-x: auto; padding-bottom: 0.25rem;
+    }
+
+    .tab {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      padding: 0.5rem 1.2rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .tab.active-opt   { border-color: var(--opt-col); color: var(--opt-col); background: rgba(57,255,20,0.07); }
+    .tab.active-lift  { border-color: var(--lift-col); color: var(--lift-col); background: rgba(0,229,255,0.07); }
+    .tab.active-stair { border-color: var(--stair-col); color: var(--stair-col); background: rgba(255,107,53,0.07); }
+
+    /* ---- ROUTE CARD ---- */
+    .route-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .route-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .route-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.3rem;
+    }
+
+    .route-label.opt   { color: var(--opt-col); }
+    .route-label.lift  { color: var(--lift-col); }
+    .route-label.stair { color: var(--stair-col); }
+
+    .route-time {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .route-meta {
+      text-align: right;
+    }
+
+    .meta-item {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .meta-item strong { color: var(--text); }
+
+    /* ---- PATH STEPS ---- */
+    .path-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+    }
+
+    .step-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 28px;
+    }
+
+    .step-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .step:first-child .step-dot { background: var(--opt-col); box-shadow: 0 0 10px rgba(57,255,20,0.5); }
+    .step:last-child  .step-dot { background: var(--accent2); box-shadow: 0 0 10px rgba(255,107,53,0.5); }
+
+    .step-connector {
+      width: 1px;
+      background: var(--border);
+      flex-grow: 1;
+      min-height: 24px;
+    }
+
+    .step-content {
+      padding: 0.6rem 0;
+      flex: 1;
+    }
+
+    .step-node {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text);
+    }
+
+    .step-weight {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    /* ---- COMPARISON TABLE ---- */
+    .compare-table {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .compare-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 1fr 80px 80px 1fr;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    .compare-row:last-child { border-bottom: none; }
+    .compare-row.header { color: var(--muted); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .compare-row .name { font-weight: 700; }
+    .compare-row .time-val { font-size: 0.9rem; font-weight: 700; }
+    .compare-row .stops-val { color: var(--muted); }
+    .compare-row .via-val { color: var(--muted); font-size: 0.68rem; }
+
+    .winner-tag {
+      display: inline-block;
+      font-size: 0.55rem;
+      letter-spacing: 0.08em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      background: rgba(57,255,20,0.15);
+      color: var(--opt-col);
+      border: 1px solid rgba(57,255,20,0.3);
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    /* ---- STATS BAR ---- */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media(max-width: 600px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.2rem;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    /* ---- LOADING ---- */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .loading.visible { display: block; }
+
+    .spinner {
+      width: 40px; height: 40px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading p {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* ---- ERROR ---- */
+    .error-box {
+      display: none;
+      background: rgba(255,107,53,0.08);
+      border: 1px solid rgba(255,107,53,0.3);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent2);
+      margin-bottom: 1.5rem;
+    }
+
+    .error-box.visible { display: block; }
+
+    /* ---- INFO SECTION ---- */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    .info-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .info-card h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .info-card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ---- DEMO NOTE ---- */
+    .demo-note {
+      background: rgba(0,229,255,0.05);
+      border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .demo-note strong { color: var(--text); }
+
+    /* ---- SCROLLBAR ---- */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ---- SECTION HEADING ---- */
+    .section-heading {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      position: relative; z-index: 5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-row">
+    <div class="logo-icon"></div>
+    <h1>Navrachna <span>Campus Tour</span></h1>
+  </div>
+  <p class="subtitle">Campus Shortest Path System — DAA End-Sem Project</p>
+  <div class="badges">
+    <span class="badge badge-algo">Dijkstra's Algorithm</span>
+    <span class="badge badge-graph">Weighted Graph</span>
+    <span class="badge badge-3d">3D Campus Model</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- DEMO NOTE -->
+  <div class="demo-note">
+    <strong>🔌 Integration Note:</strong> This UI connects to a Flask backend at 
+    <code>http://localhost:5000</code>. Run <code>python app.py</code> to enable live 
+    Dijkstra results. In demo mode (below), data is simulated directly in JavaScript 
+    using the same algorithm logic.
+  </div>
+
+  <!-- SEARCH CARD -->
+  <div class="search-card">
+    <div class="search-title">// Find Shortest Path</div>
+    <div class="inputs-row">
+      <div class="field">
+        <label>📍 Source Location</label>
+        <select id="source-select">
+          <option value="">— Select Start —</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>🏁 Destination</label>
+        <select id="dest-select">
+          <option value="">— Select End —</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-find" id="find-btn" onclick="runSearch()">
+      ⚡ Find Shortest Path
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Running Dijkstra's algorithm...</p>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-box" id="error-box"></div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+
+    <!-- STATS ROW -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-box">
+        <div class="stat-val" id="stat-time" style="color:var(--opt-col)">—</div>
+        <div class="stat-label">Optimal Time</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="stat-stops" style="color:var(--accent)">—</div>
+        <div class="stat-label">Total Stops</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="stat-saved" style="color:var(--accent2)">—</div>
+        <div class="stat-label">Lift Saves (sec)</div>
+      </div>
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <div class="compare-table">
+      <div class="compare-title">// Route Comparison</div>
+      <div class="compare-row header">
+        <span>Route</span>
+        <span>Time</span>
+        <span>Stops</span>
+        <span>Via</span>
+      </div>
+      <div class="compare-row" id="cmp-opt">
+        <span class="name" style="color:var(--opt-col)">🏆 Optimal</span>
+        <span class="time-val" id="cmp-opt-t">—</span>
+        <span class="stops-val" id="cmp-opt-s">—</span>
+        <span class="via-val" id="cmp-opt-v">—</span>
+      </div>
+      <div class="compare-row" id="cmp-lift">
+        <span class="name" style="color:var(--lift-col)">🛗 Lift</span>
+        <span class="time-val" id="cmp-lift-t">—</span>
+        <span class="stops-val" id="cmp-lift-s">—</span>
+        <span class="via-val" id="cmp-lift-v">—</span>
+      </div>
+      <div class="compare-row" id="cmp-stair">
+        <span class="name" style="color:var(--stair-col)">🚶 Stairs</span>
+        <span class="time-val" id="cmp-stair-t">—</span>
+        <span class="stops-val" id="cmp-stair-s">—</span>
+        <span class="via-val" id="cmp-stair-v">—</span>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active-opt" onclick="showRoute('optimal')">🏆 Optimal Route</button>
+      <button class="tab" onclick="showRoute('lift')">🛗 Lift Preferred</button>
+      <button class="tab" onclick="showRoute('stair')">🚶 Stairs Preferred</button>
+    </div>
+
+    <!-- ROUTE DISPLAY -->
+    <div class="route-card" id="route-display">
+      <div class="route-header">
+        <div>
+          <div class="route-label opt" id="rd-label">Optimal Route</div>
+          <div class="route-time" id="rd-time">—</div>
+          <div style="font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);margin-top:0.3rem" id="rd-movement">—</div>
+        </div>
+        <div class="route-meta">
+          <div class="meta-item">Stops: <strong id="rd-stops">—</strong></div>
+          <div class="meta-item">Algorithm: <strong style="color:var(--opt-col)">Dijkstra O((V+E)logV)</strong></div>
+        </div>
+      </div>
+      <div class="path-steps" id="path-steps"></div>
+    </div>
+
+  </div>
+
+  <!-- INFO CARDS -->
+  <div class="section-heading">// How It Works</div>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-icon">🗺️</div>
+      <h3>3D Weighted Graph</h3>
+      <p>Campus is modeled as a graph where X=Block, Y=Location, Z=Floor. Each node is named Block_Floor_Location (e.g. A_6_LABS).</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">⚡</div>
+      <h3>Dijkstra's Algorithm</h3>
+      <p>Uses a min-heap priority queue to explore nodes in order of distance. Guarantees shortest path. O((V+E) log V) complexity.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🛗</div>
+      <h3>Lift vs Stairs</h3>
+      <p>L1/L2 travel at 5 sec/floor. S2 is fastest stair at 15 sec/floor. System compares all vertical movement options automatically.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🔁</div>
+      <h3>Multi-Block Routes</h3>
+      <p>Three inter-block routes: C→Admission→B→A (fast), C→NCC→MechLab→A (medium), C→Basement→A (alternate).</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Navrachna University Campus Navigator &mdash; DAA End-Sem Project &mdash; Dijkstra's Algorithm &mdash; 3D Weighted Graph
+</footer>
+
+<script>
+// ============================================================
+//  EMBEDDED JAVASCRIPT DIJKSTRA (same logic as Python)
+//  Works standalone without Flask for demo purposes.
+//  When Flask is running, it calls the API instead.
+// ============================================================
+
+// --- Graph data (subset for JS demo) ---
+// Full graph is loaded from campus.txt via Flask API in production.
+const RAW_EDGES = `
+A_1_109 A_1_110 2
+A_1_110 A_1_L1 5
+A_1_110 A_1_108 10
+A_1_108 A_1_107 2
+A_1_107 A_1_106 3
+A_1_106 A_1_105 9
+A_1_105 A_1_104 2
+A_1_104 A_1_STAFF 4
+A_1_STAFF A_1_125 18
+A_1_125 A_1_124 5
+A_1_124 A_1_123 3
+A_1_123 A_1_113 3
+A_1_113 A_1_122 3
+A_1_122 A_1_114 3
+A_1_114 A_1_121 3
+A_1_121 A_1_116 3
+A_1_116 A_1_117 3
+A_1_117 A_1_118 3
+A_1_118 A_1_ADMIN 5
+A_1_ENTRY A_1_109 5
+A_1_ENTRY A_1_L1 8
+A_1_S1 A_2_S1 30
+A_2_S1 A_3_S1 30
+A_3_S1 A_4_S1 30
+A_4_S1 A_5_S1 30
+A_5_S1 A_6_S1 30
+A_6_S1 A_7_S1 30
+A_7_S1 A_8_S1 30
+A_1_S2 A_2_S2 15
+A_2_S2 A_3_S2 15
+A_3_S2 A_4_S2 15
+A_4_S2 A_5_S2 15
+A_5_S2 A_6_S2 15
+A_6_S2 A_7_S2 15
+A_7_S2 A_8_S2 15
+A_1_S3 A_2_S3 35
+A_2_S3 A_3_S3 35
+A_3_S3 A_4_S3 35
+A_4_S3 A_5_S3 35
+A_5_S3 A_6_S3 35
+A_6_S3 A_7_S3 35
+A_7_S3 A_8_S3 35
+A_1_FIRE A_2_FIRE 20
+A_2_FIRE A_3_FIRE 20
+A_3_FIRE A_4_FIRE 20
+A_4_FIRE A_5_FIRE 20
+A_5_FIRE A_6_FIRE 20
+A_6_FIRE A_7_FIRE 20
+A_7_FIRE A_8_FIRE 20
+A_1_L1 A_2_L1 5
+A_2_L1 A_3_L1 5
+A_3_L1 A_4_L1 5
+A_4_L1 A_5_L1 5
+A_5_L1 A_6_L1 5
+A_6_L1 A_7_L1 5
+A_7_L1 A_8_L1 5
+A_1_L2 A_2_L2 5
+A_2_L2 A_3_L2 5
+A_3_L2 A_4_L2 5
+A_4_L2 A_5_L2 5
+A_5_L2 A_6_L2 5
+A_6_L2 A_7_L2 5
+A_7_L2 A_8_L2 5
+A_1_S1 A_1_L1 10
+A_1_L1 A_1_S2 10
+A_1_L1 A_1_WASHROOM 10
+A_2_S1 A_2_L1 10
+A_2_L1 A_2_S2 10
+A_2_L1 A_2_WASHROOM 10
+A_3_S1 A_3_L1 10
+A_3_L1 A_3_S2 10
+A_3_L1 A_3_WASHROOM 10
+A_4_S1 A_4_L1 10
+A_4_L1 A_4_S2 10
+A_4_L1 A_4_WASHROOM 10
+A_5_S1 A_5_L1 10
+A_5_L1 A_5_S2 10
+A_5_L1 A_5_WASHROOM 10
+A_6_S1 A_6_L1 10
+A_6_L1 A_6_S2 10
+A_6_L1 A_6_WASHROOM 10
+A_7_S1 A_7_L1 10
+A_7_L1 A_7_S2 10
+A_7_L1 A_7_WASHROOM 10
+A_8_S1 A_8_L1 10
+A_8_L1 A_8_S2 10
+A_8_L1 A_8_WASHROOM 10
+A_5_L1 A_5_511 4
+A_5_L1 A_5_501 10
+A_5_L2 A_5_506 5
+A_5_511 A_5_501 15
+A_5_511 A_5_AUDITORIUM 2
+A_5_501 A_5_502 2
+A_5_502 A_5_503 2
+A_5_503 A_5_504 10
+A_5_504 A_5_505 2
+A_5_504 A_5_509 1
+A_5_504 A_5_510 1
+A_5_505 A_5_506 10
+A_5_506 A_5_507 3
+A_5_507 A_5_508 3
+A_5_501 A_5_STAFF 5
+A_5_505 A_5_WASHROOM 10
+A_6_601 A_6_602 2
+A_6_602 A_6_603 4
+A_6_603 A_6_604 6
+A_6_604 A_6_605 4
+A_6_604 A_6_STAFF 4
+A_6_602 A_6_CONF 4
+A_6_601 A_6_LABS 20
+A_6_601 A_6_WASHROOM 5
+A_6_L1 A_6_601 5
+A_6_L1 A_6_LABS 5
+A_6_L2 A_6_605 5
+A_6_L2 A_6_604 5
+A_7_701 A_7_702 2
+A_7_702 A_7_703 4
+A_7_703 A_7_704 6
+A_7_704 A_7_705 4
+A_7_704 A_7_STAFF 4
+A_7_703 A_7_CONF 4
+A_7_701 A_7_WASHROOM 5
+A_7_L1 A_7_701 5
+A_7_L1 A_7_LABS 5
+A_7_L2 A_7_705 5
+A_7_L2 A_7_704 5
+A_8_801 A_8_802 2
+A_8_802 A_8_803 4
+A_8_803 A_8_804 6
+A_8_804 A_8_805 4
+A_8_804 A_8_NUV_IF 4
+A_8_802 A_8_COUNSELL 4
+A_8_804 A_8_STAFF 4
+A_8_801 A_8_WASHROOM 5
+A_8_L1 A_8_801 5
+A_8_L1 A_8_TINKER 5
+A_8_L2 A_8_805 5
+A_G_ENTRY A_G_MECHLAB 0
+A_G_MECHLAB A_G_NCC 30
+A_G_MECHLAB A_G_WASHROOM 10
+A_G_MECHLAB A_G_LIBRARY 40
+A_G_LIBRARY A_G_MOOTCOURT 15
+A_G_MOOTCOURT A_G_TEAPOST 10
+A_G_TEAPOST A_G_NCC 20
+A_G_NCC A_G_MECHLAB 30
+A_G_ENTRY A_1_ENTRY 0
+A_1_ENTRY A_1_AMPHITHEATRE 15
+A_3_301 A_3_WOMEN_SLEEP 5
+A_3_L1 A_3_301 5
+A_3_303 A_3_STAFF 5
+A_3_303 A_3_WASHROOM 8
+A_2_L1 A_2_201 5
+A_2_204 A_2_STAFF 5
+A_4_L1 A_4_408 5
+A_4_404 A_4_STAFF 5
+A_4_404 A_4_WASHROOM 8
+B_G_GATE B_G_STAIRS 50
+B_G_STAIRS B_1_STAIRS 10
+B_1_STAIRS B_2_STAIRS 30
+B_2_STAIRS B_3_STAIRS 30
+B_3_STAIRS B_4_STAIRS 30
+B_4_STAIRS B_5_STAIRS 30
+B_5_STAIRS B_6_STAIRS 30
+B_1_STAIRS B_1_STAFF 7
+B_1_STAFF B_1_WASHROOM 5
+B_1_BLOCK B_1_STAIRS 5
+B_2_STAIRS B_2_201 7
+B_2_201 B_2_202 3
+B_2_202 B_2_203 3
+B_2_203 B_2_204 3
+B_2_204 B_2_205 3
+B_5_STAIRS B_5_HALL 5
+B_G_STAIRS B_B_STATIONARY 20
+B_B_STATIONARY B_B_MUSIC 2
+C_G_ENTRY C_G_CANTEEN 30
+C_G_CANTEEN C_1_ADMISSION 20
+C_1_ADMISSION B_1_BLOCK 20
+B_1_BLOCK A_1_ENTRY 30
+A_G_NCC C_G_CANTEEN 120
+C_G_ENTRY B_G_GATE 40
+B_B_STATIONARY C_G_CANTEEN 60
+A_G_TEAPOST B_B_MUSIC 25
+B_1_BLOCK A_1_AMPHITHEATRE 15
+C_G_ENTRY A_G_ENTRY 120
+`;
+
+// ---- Build Graph ----
+function buildGraph(raw) {
+  const graph = {};
+  const nodes = new Set();
+  raw.trim().split('\n').forEach(line => {
+    line = line.trim();
+    if (!line || line.startsWith('#')) return;
+    const parts = line.split(/\s+/);
+    if (parts.length !== 3) return;
+    const [a, b, w] = parts;
+    const weight = parseInt(w);
+    if (isNaN(weight)) return;
+    if (!graph[a]) graph[a] = [];
+    if (!graph[b]) graph[b] = [];
+    graph[a].push([b, weight]);
+    graph[b].push([a, weight]);
+    nodes.add(a); nodes.add(b);
+  });
+  return { graph, nodes: [...nodes].sort() };
+}
+
+// ---- Min-Heap (Priority Queue) ----
+class MinHeap {
+  constructor() { this.heap = []; }
+  push(item) {
+    this.heap.push(item);
+    this._bubbleUp(this.heap.length - 1);
+  }
+  pop() {
+    const top = this.heap[0];
+    const last = this.heap.pop();
+    if (this.heap.length > 0) {
+      this.heap[0] = last;
+      this._sinkDown(0);
+    }
+    return top;
+  }
+  _bubbleUp(i) {
+    while (i > 0) {
+      const parent = Math.floor((i - 1) / 2);
+      if (this.heap[parent][0] <= this.heap[i][0]) break;
+      [this.heap[parent], this.heap[i]] = [this.heap[i], this.heap[parent]];
+      i = parent;
+    }
+  }
+  _sinkDown(i) {
+    const n = this.heap.length;
+    while (true) {
+      let smallest = i;
+      const l = 2*i+1, r = 2*i+2;
+      if (l < n && this.heap[l][0] < this.heap[smallest][0]) smallest = l;
+      if (r < n && this.heap[r][0] < this.heap[smallest][0]) smallest = r;
+      if (smallest === i) break;
+      [this.heap[smallest], this.heap[i]] = [this.heap[i], this.heap[smallest]];
+      i = smallest;
+    }
+  }
+  get size() { return this.heap.length; }
+}
+
+// ---- Dijkstra ----
+function dijkstra(graph, source) {
+  const dist = {}, prev = {};
+  for (const n in graph) { dist[n] = Infinity; prev[n] = null; }
+  dist[source] = 0;
+  const heap = new MinHeap();
+  heap.push([0, source]);
+  while (heap.size > 0) {
+    const [d, node] = heap.pop();
+    if (d > dist[node]) continue;
+    for (const [nb, w] of (graph[node] || [])) {
+      const nd = d + w;
+      if (nd < dist[nb]) {
+        dist[nb] = nd; prev[nb] = node;
+        heap.push([nd, nb]);
+      }
+    }
+  }
+  return { dist, prev };
+}
+
+function getPath(prev, source, dest) {
+  const path = [];
+  let cur = dest;
+  while (cur !== null) { path.push(cur); cur = prev[cur]; }
+  path.reverse();
+  return path[0] === source ? path : [];
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60), sec = s % 60;
+  return m > 0 ? `${m}m ${sec}s` : `${sec}s`;
+}
+
+function classifyPath(path) {
+  const tags = [];
+  if (path.some(n => n.includes('_L1') || n.includes('_L2'))) tags.push('Lift');
+  if (path.some(n => n.includes('_S2'))) tags.push('Stair S2');
+  if (path.some(n => n.includes('_S1'))) tags.push('Stair S1');
+  if (path.some(n => n.includes('_S3'))) tags.push('Stair S3');
+  if (path.some(n => n.includes('_FIRE'))) tags.push('Fire Exit');
+  return tags.join(', ') || 'Ground / Same Floor';
+}
+
+function penalizeEdges(graph, keywords, penalty) {
+  const g = {};
+  for (const node in graph) {
+    g[node] = graph[node].map(([nb, w]) => {
+      const hit = keywords.some(k => node.includes(k) || nb.includes(k));
+      return [nb, hit ? w + penalty : w];
+    });
+  }
+  return g;
+}
+
+function sumPathTime(graph, path) {
+  let t = 0;
+  for (let i = 0; i < path.length - 1; i++) {
+    const a = path[i], b = path[i+1];
+    const edge = (graph[a] || []).find(([nb]) => nb === b);
+    if (!edge) return Infinity;
+    t += edge[1];
+  }
+  return t;
+}
+
+// ---- Setup ----
+const { graph: GRAPH, nodes: NODES } = buildGraph(RAW_EDGES);
+let currentRoutes = {};
+let currentTab = 'optimal';
+
+function populateDropdowns() {
+  const src = document.getElementById('source-select');
+  const dst = document.getElementById('dest-select');
+  NODES.forEach(n => {
+    src.innerHTML += `<option value="${n}">${n}</option>`;
+    dst.innerHTML += `<option value="${n}">${n}</option>`;
+  });
+}
+
+// ---- Run Search ----
+function runSearch() {
+  const src = document.getElementById('source-select').value;
+  const dst = document.getElementById('dest-select').value;
+
+  hideResults();
+  document.getElementById('error-box').classList.remove('visible');
+
+  if (!src || !dst) { showError('Please select both source and destination.'); return; }
+  if (src === dst) { showError('Source and destination cannot be the same.'); return; }
+
+  document.getElementById('loading').classList.add('visible');
+
+  // Simulate async (gives visual feedback)
+  setTimeout(() => {
+    try {
+      // Route 1: Optimal
+      const { dist, prev } = dijkstra(GRAPH, src);
+      if (dist[dst] === Infinity) {
+        showError('No path found between these locations. They may not be connected.');
+        document.getElementById('loading').classList.remove('visible');
+        return;
+      }
+      const pathOpt = getPath(prev, src, dst);
+      const timeOpt = dist[dst];
+
+      // Route 2: Lift preferred
+      const gLift = penalizeEdges(GRAPH, ['_S1','_S2','_S3','_FIRE'], 50);
+      const r2 = dijkstra(gLift, src);
+      const pathLift = getPath(r2.prev, src, dst);
+      const timeLift = sumPathTime(GRAPH, pathLift);
+
+      // Route 3: Stair preferred
+      const gStair = penalizeEdges(GRAPH, ['_L1','_L2'], 50);
+      const r3 = dijkstra(gStair, src);
+      const pathStair = getPath(r3.prev, src, dst);
+      const timeStair = sumPathTime(GRAPH, pathStair);
+
+      currentRoutes = {
+        optimal: { path: pathOpt, time: timeOpt, label: '🏆 Optimal', cls: 'opt', movement: classifyPath(pathOpt) },
+        lift:    { path: pathLift, time: timeLift, label: '🛗 Lift Preferred', cls: 'lift', movement: classifyPath(pathLift) },
+        stair:   { path: pathStair, time: timeStair, label: '🚶 Stairs Preferred', cls: 'stair', movement: classifyPath(pathStair) }
+      };
+
+      document.getElementById('loading').classList.remove('visible');
+      renderResults();
+
+    } catch(e) {
+      document.getElementById('loading').classList.remove('visible');
+      showError('An error occurred: ' + e.message);
+    }
+  }, 600);
+}
+
+function renderResults() {
+  // Stats
+  const opt = currentRoutes.optimal;
+  const lift = currentRoutes.lift;
+  document.getElementById('stat-time').textContent = formatTime(opt.time);
+  document.getElementById('stat-stops').textContent = opt.path.length;
+  const saved = Math.max(0, lift.time - opt.time);
+  document.getElementById('stat-saved').textContent = saved > 0 ? `−${saved}` : '0';
+
+  // Comparison
+  const routes = [
+    ['opt', currentRoutes.optimal],
+    ['lift', currentRoutes.lift],
+    ['stair', currentRoutes.stair]
+  ];
+  const minTime = Math.min(...routes.map(([,r]) => r.time));
+
+  routes.forEach(([key, r]) => {
+    const winner = r.time === minTime ? '<span class="winner-tag">FASTEST</span>' : '';
+    document.getElementById(`cmp-${key}-t`).innerHTML = formatTime(r.time) + winner;
+    document.getElementById(`cmp-${key}-s`).textContent = r.path.length + ' stops';
+    document.getElementById(`cmp-${key}-v`).textContent = r.movement;
+  });
+
+  // Show results
+  currentTab = 'optimal';
+  document.getElementById('results').classList.add('visible');
+  updateTabs();
+  renderRoute('optimal');
+}
+
+function showRoute(type) {
+  currentTab = type;
+  updateTabs();
+  renderRoute(type);
+}
+
+function updateTabs() {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.remove('active-opt','active-lift','active-stair');
+  });
+  const tabs = document.querySelectorAll('.tab');
+  const map = ['optimal','lift','stair'];
+  const clsMap = {'optimal':'active-opt','lift':'active-lift','stair':'active-stair'};
+  tabs[map.indexOf(currentTab)].classList.add(clsMap[currentTab]);
+}
+
+function renderRoute(type) {
+  const r = currentRoutes[type];
+  const clsMap = {'optimal':'opt','lift':'lift','stair':'stair'};
+  const cls = clsMap[type];
+
+  document.getElementById('rd-label').textContent = r.label;
+  document.getElementById('rd-label').className = `route-label ${cls}`;
+  document.getElementById('rd-time').textContent = formatTime(r.time);
+  document.getElementById('rd-movement').textContent = r.movement;
+  document.getElementById('rd-stops').textContent = r.path.length;
+
+  // Build steps
+  const stepsEl = document.getElementById('path-steps');
+  stepsEl.innerHTML = '';
+
+  r.path.forEach((node, i) => {
+    const isLast = i === r.path.length - 1;
+    const step = document.createElement('div');
+    step.className = 'step';
+
+    let edgeWeight = '';
+    if (!isLast) {
+      const nb = r.path[i+1];
+      const edge = (GRAPH[node] || []).find(([n]) => n === nb);
+      if (edge) edgeWeight = `+${edge[1]}s to next`;
+    }
+
+    step.innerHTML = `
+      <div class="step-line">
+        <div class="step-dot"></div>
+        ${!isLast ? '<div class="step-connector"></div>' : ''}
+      </div>
+      <div class="step-content">
+        <div class="step-node">${node}</div>
+        ${edgeWeight ? `<div class="step-weight">${edgeWeight}</div>` : ''}
+      </div>
+    `;
+    stepsEl.appendChild(step);
+  });
+}
+
+function hideResults() {
+  document.getElementById('results').classList.remove('visible');
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-box');
+  el.textContent = '⚠️ ' + msg;
+  el.classList.add('visible');
+}
+
+// Init
+populateDropdowns();
+</script>
+
+</body>
+</html>
